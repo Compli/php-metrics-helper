@@ -10,3 +10,4 @@ Allows the usage of a persistent redis store for non-persistent jobs, via `REDIS
 * `REDIS_LOCAL_HOST=localhost`
 * `REDIS_PORT=6379`
 * `PHP_METRICS_HELPER_NAMESPACE=my_app`
+
