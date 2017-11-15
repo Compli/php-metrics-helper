@@ -1,17 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Compli\Metrics;
 
 use Exception;
-# TODO change logging?
-use Illuminate\Support\Facades\Log;
 use Prometheus\CollectorRegistry;
-# TODO confirm exception handling
-use Prometheus\Exception\StorageException;
 use Prometheus\RenderTextFormat;
 use Prometheus\Storage\Redis;
 
-class Metrics extends Controller
+class Metrics
 {
     /**
      * Initializes prometheus config
@@ -52,10 +48,8 @@ class Metrics extends Controller
             $counter = $registry->getOrRegisterCounter(env('PHP_METRICS_HELPER_NAMESPACE', 'nodefault'), $metricName, $metricHelp, $labelNames);
             $counter->incBy($value, $labelValues);
 
-        # TODO change this to \Prometheus\Exception?
-        # } catch (\Prometheus\Exception $e) {
-        } catch (StorageException $e) {
-            Log::error($e->getMessage());
+        } catch (\Prometheus\Exception $e) {
+            self::logError($e->getMessage());
         }
     }
 
@@ -76,8 +70,8 @@ class Metrics extends Controller
             $gauge = $registry->getOrRegisterGauge(env('PHP_METRICS_HELPER_NAMESPACE', 'nodefault'), $metricName, $metricHelp, $labelNames);
             $gauge->set($value, $labelValues);
 
-        } catch (StorageException $e) {
-            Log::error($e->getMessage());
+        } catch (\Prometheus\Exception $e) {
+            self::logError($e->getMessage());
         }
     }
 
@@ -93,8 +87,8 @@ class Metrics extends Controller
                 'Errors',
                 ['client_id', 'client_name', 'exception_type', 'exception_file'],
                 [\Request::get('clientId'), \Request::get('clientName'), get_class($exception), $exception->getFile()]);
-        } catch (StorageException $e) {
-            Log::error($e->getMessage());
+        } catch (\Prometheus\Exception $e) {
+            self::logError($e->getMessage());
         }
     }
 
@@ -113,10 +107,17 @@ class Metrics extends Controller
 
             header('Content-type: ' . RenderTextFormat::MIME_TYPE);
             echo $result;
-        } catch (StorageException $e) {
-            Log::error($e->getMessage());
+        } catch (\Prometheus\Exception $e) {
+            self::logError($e->getMessage());
             return response('Error accessing metrics storage', 503);
         }
     }
 
+    /**
+     * Write error to stderr
+     */
+    private static function logError($error)
+    {
+        echo $error;
+    }
 }
