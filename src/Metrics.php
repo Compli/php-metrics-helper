@@ -86,7 +86,8 @@ class Metrics
             self::counter('error',
                 'Errors',
                 ['client_id', 'client_name', 'exception_type', 'exception_file'],
-                [\Request::get('clientId'), \Request::get('clientName'), get_class($exception), $exception->getFile()]);
+                [\Request::get('clientId'), \Request::get('clientName'), get_class($exception), $exception->getFile()]
+                1);
         } catch (\Prometheus\Exception $e) {
             self::logError($e->getMessage());
         }
