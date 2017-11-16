@@ -1,6 +1,6 @@
 <?php
 
-namespace Compli\Metrics;
+namespace Compli;
 
 use Exception;
 use Prometheus\CollectorRegistry;
