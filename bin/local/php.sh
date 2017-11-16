@@ -5,5 +5,5 @@
 echo "Running the command 'docker run -it --rm -v $(pwd):/code:rw --user $(id -u) --workdir /code --entrypoint php 933480341162.dkr.ecr.us-west-2.amazonaws.com/php7-nginx:latest $@'"
 echo
 
-docker run -it --rm -v $(pwd):/code:rw --user $(id -u) --workdir /code --entrypoint php 933480341162.dkr.ecr.us-west-2.amazonaws.com/php7-nginx:latest "$@"
+docker run -it --rm -v $(pwd):/code:rw -e COMPOSER_HOME=/code/.composer --user $(id -u) --workdir /code --entrypoint php 933480341162.dkr.ecr.us-west-2.amazonaws.com/php7-nginx:latest "$@"
 
