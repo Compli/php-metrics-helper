@@ -15,13 +15,31 @@ Wrap the semi official PHP client library for Prometheus
 
 ## Examples
 
+_Also see apps such as case-tracking for examples_
+
 #### Local metric store (normal)
 
 ```php
+Metrics::gauge('notification_duration', 'Duration of the Notification cronjob in seconds', [], [], $timeTook);
+Metrics::counter('notification_cases_checked_total', 'How many cases have been checked', [], [], count($casesChecked)
+try {
+    # something
+} catch (MyException $e) {
+    Metrics::reportError($e);
+    return;
+}
 ```
 
 #### Remote metric store (for jobs)
 
 ```php
+Metrics::gauge('notification_duration', 'Duration of the Notification cronjob in seconds', [], [], $timeTook, true);
+Metrics::counter('notification_cases_checked_total', 'How many cases have been checked', [], [], count($casesChecked), true)
+try {
+    # something
+} catch (MyException $e) {
+    Metrics::reportError($e, true);
+    return;
+}
 ```
 
