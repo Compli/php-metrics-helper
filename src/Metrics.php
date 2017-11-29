@@ -101,18 +101,19 @@ class Metrics
      *
      * @param $response Response
      */
-    public static function handleResponse($response) {
+    public static function handleResponse($request, $response) {
         $clientId = \Request::get('clientId');
         $clientName = \Request::get('clientName');
+        $status = $response->status();
         $route = \Route::currentRouteAction();
         self::counter('http_requests_total', 'Total number of HTTP requests',
             ['client_id', 'client_name', 'status_code', 'route'],
-            [$clientId, $clientName, $response->status(), $route],
+            [$clientId, $clientName, $status, $route],
             1
         );
         self::gauge('http_request_duration', 'Durations of HTTP requests',
             ['client_id', 'client_name', 'status_code', 'route'],
-            [$clientId, $clientName, $response->status(), $route],
+            [$clientId, $clientName, $status, $route],
             microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
         );
     }
