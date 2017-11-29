@@ -77,21 +77,44 @@ class Metrics
 
     /**
      * Report error
+     * Laravel only
      *
      * @param $exception Exception
      */
     public static function reportError($exception, $remoteRedis = false)
     {
         try {
-            self::counter('error',
-                'Errors',
+            self::counter('error', 'Errors',
                 ['client_id', 'client_name', 'exception_type', 'exception_file'],
                 [\Request::get('clientId'), \Request::get('clientName'), get_class($exception), $exception->getFile()],
                 1,
-                $remoteRedis);
+                $remoteRedis
+            );
         } catch (\Prometheus\Exception $e) {
             self::logError($e->getMessage());
         }
+    }
+
+    /**
+     * Handle response
+     * Laravel only, for use in middleware
+     *
+     * @param $response Response
+     */
+    public static function handleResponse($response) {
+        $clientId = \Request::get('clientId');
+        $clientName = \Request::get('clientName');
+        $route = \Route::currentRouteAction();
+        self::counter('http_requests_total', 'Total number of HTTP requests',
+            ['client_id', 'client_name', 'status_code', 'route'],
+            [$clientId, $clientName, $response->status(), $route],
+            1
+        );
+        self::gauge('http_request_duration', 'Durations of HTTP requests',
+            ['client_id', 'client_name', 'status_code', 'route'],
+            [$clientId, $clientName, $response->status(), $route],
+            microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
+        );
     }
 
     /**
