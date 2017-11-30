@@ -84,7 +84,7 @@ class Metrics
     public static function recordException(\Exception $exception, $remoteRedis = false)
     {
         try {
-            self::counter('exception', 'Laravel Exceptions',
+            self::counter('exceptions_total', 'Total number of Laravel Exceptions',
                 ['client_id', 'client_name', 'exception_type', 'exception_file'],
                 [\Request::get('clientId'), \Request::get('clientName'), get_class($exception), $exception->getFile()],
                 1,
