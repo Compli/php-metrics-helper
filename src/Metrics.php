@@ -76,15 +76,15 @@ class Metrics
     }
 
     /**
-     * Report error
+     * Record exception
      * Laravel only
      *
      * @param $exception Exception
      */
-    public static function reportError($exception, $remoteRedis = false)
+    public static function recordException(\Exception $exception, $remoteRedis = false)
     {
         try {
-            self::counter('error', 'Errors',
+            self::counter('exception', 'Laravel Exceptions',
                 ['client_id', 'client_name', 'exception_type', 'exception_file'],
                 [\Request::get('clientId'), \Request::get('clientName'), get_class($exception), $exception->getFile()],
                 1,
