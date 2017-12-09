@@ -2,4 +2,5 @@ composer.phar
 /vendor/
 .DS_Store
 /.composer
+/.php_cs.cache
 

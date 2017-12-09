@@ -47,7 +47,6 @@ class Metrics
             $registry = CollectorRegistry::getDefault();
             $counter = $registry->getOrRegisterCounter(env('PHP_METRICS_HELPER_NAMESPACE', 'nodefault'), $metricName, $metricHelp, $labelNames);
             $counter->incBy($value, $labelValues);
-
         } catch (\Prometheus\Exception $e) {
             self::logError($e->getMessage());
         }
@@ -69,7 +68,6 @@ class Metrics
             $registry = CollectorRegistry::getDefault();
             $gauge = $registry->getOrRegisterGauge(env('PHP_METRICS_HELPER_NAMESPACE', 'nodefault'), $metricName, $metricHelp, $labelNames);
             $gauge->set($value, $labelValues);
-
         } catch (\Prometheus\Exception $e) {
             self::logError($e->getMessage());
         }
@@ -84,7 +82,9 @@ class Metrics
     public static function recordException(\Exception $exception, $remoteRedis = false)
     {
         try {
-            self::counter('exceptions_total', 'Total number of Laravel Exceptions',
+            self::counter(
+                'exceptions_total',
+                'Total number of Laravel Exceptions',
                 ['client_id', 'client_name', 'exception_type', 'exception_file'],
                 [\Request::get('clientId'), \Request::get('clientName'), get_class($exception), $exception->getFile()],
                 1,
@@ -101,17 +101,22 @@ class Metrics
      *
      * @param $response Response
      */
-    public static function handleResponse($request, $response) {
+    public static function handleResponse($request, $response)
+    {
         $clientId = \Request::get('clientId');
         $clientName = \Request::get('clientName');
         $status = $response->status();
         $route = \Route::currentRouteAction();
-        self::counter('http_requests_total', 'Total number of HTTP requests',
+        self::counter(
+            'http_requests_total',
+            'Total number of HTTP requests',
             ['client_id', 'client_name', 'status_code', 'route'],
             [$clientId, $clientName, $status, $route],
             1
         );
-        self::gauge('http_request_duration', 'Durations of HTTP requests',
+        self::gauge(
+            'http_request_duration_seconds',
+            'Durations of HTTP requests',
             ['client_id', 'client_name', 'status_code', 'route'],
             [$clientId, $clientName, $status, $route],
             microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
